@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+	<head>
+		<meta charset="UTF-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=Edge">
+		<title>testECharts</title>
+		<script src="./js/jquery.min.1.10.2.js"></script>
+		<script src="echarts.js"></script>
+		<script src="./js/map/china.js"></script>
+		<script src="./js/map/world.js"></script>
+		<script src="./js/bootstrap.min.js"></script>
+		<link rel="stylesheet" type="text/css" href="./css/bootstrap.min.css">
+		<link rel="stylesheet" type="text/css" href="./css/bootstrap-theme.min.css">
+		<style type="text/css">
+			
+			#main {
+				margin: 20px;
+				padding: 20px;
+			}
+
+			#dataInput {
+				margin: 20px;
+				padding: 20px;	
+				box-shadow: 0 0 6px 6px #666;
+				background: rgba(0,0,0,.2);
+			}
+
+			form {
+
+				display: flex;
+				flex-direction: column;
+				
+				text-align: center;
+
+			}
+
+			select {
+				position: relative;
+				left: 0;
+				right: 0;
+				bottom: 10px;
+				margin: auto;
+				height: 20px;
+				width: 200px;
+			}
+
+			span {
+				font-size: 16px;
+				color: #4B0082;
+			}
+
+			input {
+				/*原来相对位置也可以通过margin: auto;居中*/
+				position: relative;
+				left: 0;
+				right: 0;
+				bottom: 0px;
+				margin: auto;
+				height: 20px;
+				width: 200px;
+
+				text-align: center;
+				font-size: 12px;
+
+			}
+
+			button {
+				position: relative;
+				top: 20px;
+				margin: auto;
+			}
+
+		</style>
+	</head>
+	<body>		
+		<div id="main" style="display: block; float: right; width: 830px; height: 720px;"></div>
+		
+		<div id="dataInput" style="display: block; float: left; width: 600px; height: 720px;">
+
+			<form>	
+				<span style="font-size: 19px; font-weight: bold;">用户自定义图表数据</span><br>
+				<span>图表类型： </span><br>
+				<select class="select chart">
+					<option value="scatter">散点图</option>
+					<option value="line">折线图</option>
+					<option value="map">地图</option>
+					<option value="bar" selected>柱状图</option>
+					<option value="pie">饼图</option>
+					<option value="radar">雷达</option>
+					<option value="candlestick">K线图</option>
+					<option value="boxplot">箱形图</option>
+					<option value="heatmap">热点图</option>
+					<option value="graph">图形</option>
+					<option value="treemap">树形图</option>
+					<option value="parallel">平行图</option>
+					<option value="sankey">桑基图</option>
+					<option value="funnel">漏斗图</option>
+					<option value="gauge">测量图</option>
+					<option value="pictorialBar">图片化图表</option>
+					<option value="themeRiver">主题河流图</option>
+				</select>
+				<span>图表标题： </span><br>
+				<input id="title" type="text" placeholder="请输入图表标题"><br>
+				<span>标题位置： </span><br>
+				<select class="select position">
+					<option value="left">居左</option>
+					<option value="center">居中</option>
+					<option value="right">居右</option>
+				</select>
+				<span>标题字体颜色： </span><br>
+				<input id="titleWordColor" type="text" placeholder="请输入十六进制颜色值。例: #abcdef"><br>
+				<span>图表背景颜色: </span><br>
+				<input id="color" type="text" placeholder="请输入十六进制颜色值"><br>
+				<span>图例名称: </span><br>
+				<input id="legend" type="text" placeholder="请输入图例名称。例如：销量"><br>
+				<span>事物颜色： </span><br>
+				<input id="itemStyle" type="text" placeholder="请输入十六进制颜色值"><br>
+				
+				
+				<script>				
+
+					// 基于准备好的DOM，初始化ECharts实例
+					var myChart = echarts.init(document.getElementById('main'));
+
+					function run() {
+
+						var chartKind = $('.select.chart').val();
+						var chartTitle = $('#title').val();
+						var chartTitleWC = $('#titleWordColor').val();
+						var chartTitlePosition = $('.select.position').val();
+						var chartBackgroundColor = $('#color').val();
+						var chartLegend = $('#legend').val();
+						var chartItemStyle = $('#itemStyle').val();
+
+						var lineStyle = {
+					    normal: {
+				        width: 1,
+				        opacity: 0.5
+					    }
+						};
+									
+
+						// 指定图表的配置项和数据
+						var option = {
+							backgroundColor: chartBackgroundColor,
+							title: {
+								text: chartTitle,
+								left: chartTitlePosition,
+								textStyle: {
+									color: chartTitleWC
+								}
+							},
+							tooltip: {},
+							legend: {
+								data: [chartLegend],
+								bottom: 5,
+								formatter: function (name) {
+       						return echarts.format.truncateText(name, 40, '14px Microsoft Yahei', '…');
+						    },
+						    tooltip: {
+					        show: true
+						    }
+							},
+							xAxis: {
+								data: ['衬衫', '羊毛衫', '雪纺衫', '裤子', '高跟鞋', '袜子'],
+								textStyle: {
+									color: 'red'
+								}
+							},
+							yAxis: {},
+			        toolbox: {
+				        show: true,
+				        feature: {
+				          dataZoom: {
+				            yAxisIndex: 'none'
+			            },
+			            dataView: {readOnly: false},
+			            magicType: {type: ['line', 'bar']},
+			            restore: {},
+			            saveAsImage: {}
+				        }
+				    	},
+							series: [{
+								name: chartLegend,
+								lineStyle: lineStyle,
+								type: chartKind,
+								map: 'china',
+								data: [5, 20, 36, 10, 10, 20],
+								itemStyle: {
+									normal: {
+										color: chartItemStyle,
+										shadowBlur: 200,
+										shadowColor: 'rgba(0,0,0,.5)'
+									}
+								}
+							}]
+						};
+
+						// 使用刚指定的配置项和数据显示图表
+						myChart.setOption(option);
+
+					}
+				</script>
+
+				<br>
+
+				<button class="btn btn-success btn-block" type="button" onclick="run();">查看结果</button>
+
+			</form>
+		</div>
+	</body>
+</html>
